@@ -8,6 +8,6 @@ test:
   stage: test
   script:
     - pip install -e '.[dev]'
-    - pytest -vv tests/
+    - pytest -vv tests/ --config config.json
   tags:
     - shared

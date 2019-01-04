@@ -97,7 +97,6 @@ ENV/
 
 # Custom stuff
 env.sh
-config.json
 test_db.db
 .autoenv.zsh
 
