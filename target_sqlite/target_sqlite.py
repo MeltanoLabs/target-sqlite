@@ -287,9 +287,7 @@ class TargetSQLite:
             # No support for that type of message yet
             LOGGER.warn("ACTIVATE_VERSION message")
         else:
-            raise Exception(
-                "Unknown message type {} in message {}".format(o["type"], o)
-            )
+            LOGGER.warn("Skipping unknown message type {}.".format(o["type"]))
 
     def validate_record(self, stream: str, record: Dict, keys: List) -> Dict:
         """
