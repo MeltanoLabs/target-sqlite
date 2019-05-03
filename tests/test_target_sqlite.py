@@ -255,9 +255,9 @@ class TestTargetSQLite:
 
         # Check that the expected State messages where flushed
         expected_stdout = [
-            '{"type": "STATE", "value": {"test_multiple_state_messages_a": 1, "test_multiple_state_messages_b": 0}}',
-            '{"type": "STATE", "value": {"test_multiple_state_messages_a": 3, "test_multiple_state_messages_b": 2}}',
-            '{"type": "STATE", "value": {"test_multiple_state_messages_a": 5, "test_multiple_state_messages_b": 6}}',
+            '{"test_multiple_state_messages_a": 1, "test_multiple_state_messages_b": 0}',
+            '{"test_multiple_state_messages_a": 3, "test_multiple_state_messages_b": 2}',
+            '{"test_multiple_state_messages_a": 5, "test_multiple_state_messages_b": 6}',
             "",
         ]
 

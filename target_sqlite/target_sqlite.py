@@ -348,9 +348,13 @@ class TargetSQLite:
         """
         Emit the given state to stdout
         """
-        LOGGER.debug("Emitting state {}".format(state))
-        singer.write_state(state)
-        self.last_emitted_state = state
+        if state is not None:
+            line = json.dumps(state)
+            LOGGER.debug('Emitting state {}'.format(line))
+            sys.stdout.write("{}\n".format(line))
+            sys.stdout.flush()
+
+            self.last_emitted_state = state
 
     def streams_with_unflushed_records(self) -> Iterator[str]:
         """
