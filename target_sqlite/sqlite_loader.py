@@ -4,6 +4,7 @@ import functools
 
 from typing import Dict, List
 from sqlalchemy import create_engine, inspect, Table
+from sqlalchemy.event import listen
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy import exc
 
@@ -30,6 +31,12 @@ class SQLiteLoader:
         self.database = config["database"]
 
         self.engine = create_engine(f"sqlite:///{self.database}.db")
+        listen(self.engine, "first_connect", self.enable_wal)
+
+    def enable_wal(cls, conn, conn_record):
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.close()
 
     def attribute_names(self) -> List[str]:
         """

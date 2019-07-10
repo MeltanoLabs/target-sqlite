@@ -294,3 +294,13 @@ class TestSQLiteLoader:
 
         # Wrap Up the test by destroying the Table created
         test_table.drop(loader.engine)
+
+    def test_wal(self, test_table, config):
+        loader = SQLiteLoader(table=test_table, config=config)
+
+        # any connection should trigger the `first_connect` hook
+        loader.schema_apply()
+
+        with loader.engine.connect() as connection:
+            journal_mode = connection.scalar("PRAGMA journal_mode")
+            assert journal_mode == "wal"
