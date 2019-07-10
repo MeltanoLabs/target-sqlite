@@ -65,3 +65,5 @@ composite key (combination of key_properties) then the new record UPDATEs the ex
 *  At the moment we do not deconstruct nested arrays. Arrays are stored as STRINGs with the relevant JSON representation stored as is. e.g. "['banana','apple']". You can check the related tests and test streams for how `target-sqlite` when arrays are sent in a stream.
 
 *  All semi-structured data types (JSON objects) are stored as strings. You can check the related tests and test streams for how `target-sqlite` when semi-structured data are sent in a stream.
+
+* [WAL](https://www.sqlite.org/wal.html) is now enabled by default on the database. This will enable multiple concurrent processes to access the database without locking out each other.
