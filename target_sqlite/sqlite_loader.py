@@ -1,6 +1,7 @@
 import os
 import logging
 import functools
+from pathlib import Path
 
 from typing import Dict, List
 from sqlalchemy import create_engine, inspect, Table
@@ -28,9 +29,9 @@ MAP_SQLALCHEMY_TO_SQLITE_TYPE = {
 class SQLiteLoader:
     def __init__(self, table: Table, config: Dict) -> None:
         self.table = table
-        self.database = config["database"]
+        self.database_path = Path(config["database"]).with_suffix(".db")
 
-        self.engine = create_engine(f"sqlite:///{self.database}.db")
+        self.engine = create_engine(f"sqlite:///{self.database_path}")
         listen(self.engine, "first_connect", self.enable_wal)
 
     def enable_wal(cls, conn, conn_record):
