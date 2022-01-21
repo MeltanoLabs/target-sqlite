@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'inflection>=0.3.1',
         'singer-python>=5.0.12',
-        'sqlalchemy==1.2.12',
+        'sqlalchemy==1.3.0',
     ],
     extras_require={
         'dev': [
