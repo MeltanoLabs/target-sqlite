@@ -7,7 +7,7 @@ from datetime import datetime
 from sqlalchemy import MetaData, Table, Column, inspect
 from sqlalchemy.types import TIMESTAMP, Float, String, BigInteger, Boolean
 
-from target_sqlite.sqlite_loader import SQLiteLoader
+from singer_sqlite.sqlite_loader import SQLiteLoader
 
 
 @pytest.fixture(scope="class")

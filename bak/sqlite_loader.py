@@ -9,7 +9,7 @@ from sqlalchemy.event import listen
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy import exc
 
-from target_sqlite.utils.error import SchemaUpdateError
+from singer_sqlite.utils.error import SchemaUpdateError
 
 
 # Map sqlalchemy types to SQLite Types
