@@ -4,8 +4,7 @@ import os
 from jsonschema import ValidationError
 from sqlalchemy import create_engine, inspect
 
-from target_sqlite.target_sqlite import TargetSQLite
-from target_sqlite.utils.error import SchemaUpdateError
+from singer_sqlite import TargetSQLite, TapSQLite
 
 
 def load_stream(filename):

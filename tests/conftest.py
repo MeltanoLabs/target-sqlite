@@ -1,31 +1,85 @@
-import json
+"""Shared fixtures."""
+
+
+from pathlib import Path
+
 import pytest
 
+from singer_sqlite import SQLiteTap, SQLiteTarget, SQLiteConnector
+from singer_sdk.helpers._singer import Catalog
+from singer_sdk.testing import (
+    _get_tap_catalog,
+)
 
-class SilencedDict(dict):
-    def __repr__(self):
-        return "Dict[ ... sensitive_data ... ]"
-
-    def __str__(self):
-        return "Dict[ ... sensitive_data ... ]"
-
-
-def pytest_addoption(parser):
-    parser.addoption("--config", help="Config file", required=True)
+# Sample DB Setup and Config
 
 
-@pytest.fixture(scope="session")
-def config(request):
-    config = SilencedDict()
+@pytest.fixture
+def path_to_sample_data_db(tmp_path: Path) -> Path:
+    return tmp_path / Path("foo.db")
 
-    config_file = request.config.getoption("--config")
 
-    if config_file:
-        with open(config_file) as input:
-            config.update(json.load(input))
-    else:
-        raise Exception("No config file provided")
+@pytest.fixture
+def sqlite_sample_db_config(path_to_sample_data_db: str) -> dict:
+    """Get configuration dictionary for target-csv."""
+    return {"path_to_db": str(path_to_sample_data_db)}
 
-    config["timestamp_column"] = config.get("timestamp_column", "__loaded_at")
 
-    return config
+@pytest.fixture
+def sqlite_connector(sqlite_sample_db_config) -> SQLiteConnector:
+    return SQLiteConnector(config=sqlite_sample_db_config)
+
+
+@pytest.fixture
+def sqlite_sample_db(sqlite_connector):
+    """Return a path to a newly constructed sample DB."""
+    for t in range(3):
+        sqlite_connector.connection.execute(f"DROP TABLE IF EXISTS t{t}")
+        sqlite_connector.connection.execute(
+            f"CREATE TABLE t{t} (c1 int PRIMARY KEY, c2 varchar(10))"
+        )
+        for x in range(100):
+            sqlite_connector.connection.execute(
+                f"INSERT INTO t{t} VALUES ({x}, 'x={x}')"
+            )
+
+
+@pytest.fixture
+def sqlite_sample_tap(sqlite_sample_db, sqlite_sample_db_config) -> SQLiteTap:
+    _ = sqlite_sample_db
+    catalog_obj = Catalog.from_dict(
+        _get_tap_catalog(SQLiteTap, config=sqlite_sample_db_config, select_all=True)
+    )
+
+    # Set stream `t1` to use incremental replication.
+    t0 = catalog_obj.get_stream("main-t0")
+    t0.replication_key = "c1"
+    t0.replication_method = "INCREMENTAL"
+    t1 = catalog_obj.get_stream("main-t1")
+    t1.key_properties = ["c1"]
+    t1.replication_method = "FULL_TABLE"
+    t2 = catalog_obj.get_stream("main-t2")
+    t2.key_properties = ["c1"]
+    t2.replication_key = "c1"
+    t2.replication_method = "INCREMENTAL"
+    return SQLiteTap(config=sqlite_sample_db_config, catalog=catalog_obj.to_dict())
+
+
+# Target Test DB Setup and Config
+
+
+@pytest.fixture
+def path_to_target_db(tmp_path: Path) -> Path:
+    return Path(f"{tmp_path}/target_test.db")
+
+
+@pytest.fixture
+def sqlite_target_test_config(path_to_target_db: str) -> dict:
+    """Get configuration dictionary for target-csv."""
+    return {"path_to_db": str(path_to_target_db)}
+
+
+@pytest.fixture
+def sqlite_sample_target(sqlite_target_test_config):
+    """Get a sample target object."""
+    return SQLiteTarget(sqlite_target_test_config)

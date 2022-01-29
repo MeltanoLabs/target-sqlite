@@ -6,12 +6,12 @@ from datetime import datetime
 from jsonschema import ValidationError, Draft4Validator, FormatChecker
 from typing import Dict, List, Iterator
 
-from target_sqlite.utils.singer_target_utils import (
+from singer_sqlite.utils.singer_target_utils import (
     flatten_record,
     flatten_key,
     generate_sqlalchemy_table,
 )
-from target_sqlite.sqlite_loader import SQLiteLoader
+from singer_sqlite.sqlite_loader import SQLiteLoader
 
 
 LOGGER = singer.get_logger()
@@ -350,7 +350,7 @@ class TargetSQLite:
         """
         if state is not None:
             line = json.dumps(state)
-            LOGGER.debug('Emitting state {}'.format(line))
+            LOGGER.debug("Emitting state {}".format(line))
             sys.stdout.write("{}\n".format(line))
             sys.stdout.flush()
 
