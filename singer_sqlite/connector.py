@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 import sqlalchemy
-
 from singer_sdk import SQLConnector
 
 DB_PATH_CONFIG = "path_to_db"
