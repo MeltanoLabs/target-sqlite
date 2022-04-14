@@ -17,7 +17,9 @@ def load_stream(filename):
 
 @pytest.fixture(scope="class")
 def sqlite_engine(config):
-    return create_engine(f'sqlite:///{config["database"]}.db')
+    db_file = f'{config["database"]}.db'
+    yield create_engine(f"sqlite:///{db_file}")
+    os.remove(db_file)
 
 
 class TestTargetSQLite:
@@ -177,11 +179,11 @@ class TestTargetSQLite:
             result = connection.execute(query).fetchone()
             assert result[0] == 1
 
-            query = (
-                "SELECT COUNT(*) "
-                f" FROM test_object_schema_no_properties "
-                " WHERE object_store = \"{'id': 1, 'metric': 1}\""
-            )
+            query = """
+                SELECT COUNT(*)
+                FROM test_object_schema_no_properties
+                WHERE object_store = '{"id": 1, "metric": 1}'
+            """
             result = connection.execute(query).fetchone()
             assert result[0] == 1
 
@@ -375,7 +377,30 @@ class TestTargetSQLite:
 
         test_stream = "array_data.stream"
 
-        self.integration_test(config, sqlite_engine, expected_results, test_stream)
+        self.integration_test(
+            config,
+            sqlite_engine,
+            expected_results,
+            test_stream,
+            drop_schema=False,
+        )
+
+        # We also need to test that the proper data records were stored
+        with sqlite_engine.connect() as connection:
+            query = """
+                SELECT json_array_length(fruits) AS size
+                FROM test_carts
+                ORDER BY id
+            """
+            result = connection.execute(query).fetchall()
+            assert result[0][0] == 3
+            assert result[1][0] == 2
+            assert result[2][0] == 1
+            assert result[3][0] == 4
+
+        # Drop the Test Table
+        with sqlite_engine.connect() as connection:
+            connection.execute(f"DROP TABLE test_carts")
 
     @pytest.mark.slow
     def test_encoded_string_data(self, config, sqlite_engine):
