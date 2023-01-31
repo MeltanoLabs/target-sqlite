@@ -1,8 +1,8 @@
-import collections
 import inflection
 import itertools
 import logging
 import re
+from collections.abc import MutableMapping
 
 from sqlalchemy import MetaData, Table, Column
 from sqlalchemy.types import TIMESTAMP, Float, String, BigInteger, Boolean
@@ -78,11 +78,11 @@ def flatten_record(d, schema, parent_key=[], sep="__"):
             # If the attribute name (new_key) is defined in the schema
             # Then stop un-nesting and store its values as they are even if
             #  it is an object
-            if isinstance(v, collections.MutableMapping) or type(v) is list:
+            if isinstance(v, MutableMapping) or type(v) is list:
                 items.append((new_key, str(v)))
             else:
                 items.append((new_key, v))
-        elif isinstance(v, collections.MutableMapping):
+        elif isinstance(v, MutableMapping):
             items.extend(flatten_record(v, schema, parent_key + [k], sep=sep).items())
         else:
             items.append((new_key, str(v) if type(v) is list else v))
