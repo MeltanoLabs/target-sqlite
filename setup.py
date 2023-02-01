@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="target-sqlite",
-    version="0.2.1",
+    version="0.3.0",
     author="Meltano",
     author_email="meltano@gitlab.com",
     description="Singer.io target for importing data to SQLite",
@@ -29,7 +29,7 @@ setup(
     [console_scripts]
     target-sqlite=target_sqlite:main
     """,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     packages=find_packages(exclude=["tests"]),
     package_data={},
     include_package_data=True,
