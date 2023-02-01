@@ -18,8 +18,10 @@ def load_stream(filename):
 @pytest.fixture(scope="class")
 def sqlite_engine(config):
     db_file = f'{config["database"]}.db'
-    yield create_engine(f"sqlite:///{db_file}")
-    os.remove(db_file)
+    try:
+        yield create_engine(f"sqlite:///{db_file}")
+    finally:
+        os.remove(db_file)
 
 
 class TestTargetSQLite:
