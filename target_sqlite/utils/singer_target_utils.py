@@ -79,7 +79,7 @@ def flatten_record(d, schema, parent_key=[], sep="__"):
             # If the attribute name (new_key) is defined in the schema
             # Then stop un-nesting and store its values as they are even if
             #  it is an object
-            if isinstance(v, MutableMapping) or isinstance(v, list):
+            if isinstance(v, MutableMapping) or type(v) is list:
                 items.append((new_key, json.dumps(v)))
             else:
                 items.append((new_key, v))
