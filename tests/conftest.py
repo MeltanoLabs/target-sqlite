@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 import json
 import pytest
 
+from collections import UserDict
 
-class SilencedDict(dict):
+import sqlalchemy as sa
+
+
+class SilencedDict(UserDict):
     def __repr__(self):
         return "Dict[ ... sensitive_data ... ]"
 
@@ -15,7 +21,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def config(request):
+def config(request: pytest.FixtureRequest) -> SilencedDict:
     config = SilencedDict()
 
     config_file = request.config.getoption("--config")
@@ -29,3 +35,8 @@ def config(request):
     config["timestamp_column"] = config.get("timestamp_column", "__loaded_at")
 
     return config
+
+
+def pytest_report_header() -> list[str]:
+    """Return a list of strings to be displayed in the header of the report."""
+    return [f"sqlalchemy: {sa.__version__}"]
