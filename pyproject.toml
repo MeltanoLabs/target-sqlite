@@ -4,7 +4,7 @@ requires = ["hatchling"]
 
 [project]
 name = "target-sqlite"
-version = "0.4.2"
+version = "0.5.0"
 keywords = ["singer-io", "meltano", "elt", "sqlite", "singer-tap"]
 readme = "README.md"
 license.file = "LICENSE"
@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "inflection>=0.3.1",
     "singer-python>=5.0.12",
-    "sqlalchemy==1.4.53",
+    "sqlalchemy==2.0.31",
 ]
 optional-dependencies.dev = ["pytest>=3.8", "black>=18.3a0"]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
