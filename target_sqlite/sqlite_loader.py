@@ -1,15 +1,10 @@
-import os
 import logging
-import functools
 from pathlib import Path
 
 from typing import Dict, List
-from sqlalchemy import create_engine, inspect, Table
+from sqlalchemy import create_engine, inspect, Table, text
 from sqlalchemy.event import listen
-from sqlalchemy.schema import CreateSchema
 from sqlalchemy import exc
-
-from target_sqlite.utils.error import SchemaUpdateError
 
 
 # Map sqlalchemy types to SQLite Types
@@ -31,7 +26,7 @@ class SQLiteLoader:
         self.table = table
         self.database_path = Path(config["database"]).with_suffix(".db")
 
-        self.engine = create_engine(f"sqlite:///{self.database_path}")
+        self.engine = create_engine(f"sqlite:///{self.database_path}", future=True)
         listen(self.engine, "first_connect", self.enable_wal)
 
     def enable_wal(cls, conn, conn_record):
@@ -69,7 +64,7 @@ class SQLiteLoader:
         inspector = inspect(self.engine)
 
         all_table_names = inspector.get_table_names(self.table.schema)
-        if not (self.table.name in all_table_names):
+        if self.table.name not in all_table_names:
             logging.debug(f"Table {self.table.name} does not exist -> creating it ")
             self.table.create(self.engine)
         else:
@@ -107,7 +102,7 @@ class SQLiteLoader:
                 columns_to_add.append((column.name, column_type))
 
         # If there are any columns to add, make the schema update
-        for (name, type) in columns_to_add:
+        for name, type in columns_to_add:
             self.add_column(name, type)
 
     def add_column(self, col_name: str, col_data_type: str) -> None:
@@ -119,8 +114,8 @@ class SQLiteLoader:
 
         logging.debug(f"Adding COLUMN {col_name} ({col_data_type}) to {full_name}")
 
-        with self.engine.connect() as connection:
-            connection.execute(alter_stmt)
+        with self.engine.begin() as connection:
+            connection.execute(text(alter_stmt))
 
     def load(self, data: List[Dict]) -> None:
         """
@@ -135,7 +130,7 @@ class SQLiteLoader:
             #  does not yet support the "ON CONFLICT" clause for upserting
             # So, we'll follow the slow but stable approach of inserting each
             #  row and updating on conflict.
-            with self.engine.connect() as connection:
+            with self.engine.begin() as connection:
                 for row in data:
                     try:
                         connection.execute(self.table.insert(), row)
@@ -149,5 +144,5 @@ class SQLiteLoader:
                         connection.execute(statement, row)
         else:
             # Just Insert (append) as no conflicts can arise
-            with self.engine.connect() as connection:
+            with self.engine.begin() as connection:
                 connection.execute(self.table.insert(), data)
