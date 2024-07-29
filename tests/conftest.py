@@ -3,6 +3,8 @@ import pytest
 
 from collections import UserDict
 
+import sqlalchemy as sa
+
 
 class SilencedDict(UserDict):
     def __repr__(self):
@@ -31,3 +33,8 @@ def config(request: pytest.FixtureRequest) -> SilencedDict:
     config["timestamp_column"] = config.get("timestamp_column", "__loaded_at")
 
     return config
+
+
+def pytest_report_header() -> list[str]:
+    """Return a list of strings to be displayed in the header of the report."""
+    return [f"sqlalchemy: {sa.__version__}"]
