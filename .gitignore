@@ -97,7 +97,7 @@ ENV/
 
 # Custom stuff
 env.sh
-test_db.db
+test_db.db*
 .autoenv.zsh
 
 rsa-key
