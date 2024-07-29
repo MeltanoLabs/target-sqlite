@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "inflection>=0.3.1",
     "singer-python>=5.0.12",
-    "sqlalchemy==1.4.53",
+    "sqlalchemy==2.0.31",
 ]
 optional-dependencies.dev = ["pytest>=3.8", "black>=18.3a0"]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
