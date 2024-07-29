@@ -4,7 +4,7 @@ requires = ["hatchling"]
 
 [project]
 name = "target-sqlite"
-version = "0.4.0"
+version = "0.4.1"
 keywords = ["singer-io", "meltano", "elt", "sqlite", "singer-tap"]
 readme = "README.md"
 license.file = "LICENSE"
