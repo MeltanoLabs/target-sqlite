@@ -1,4 +1,28 @@
-[tool.pytest.ini_options]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+name = "target-sqlite"
+version = "0.4.0"
+keywords = ["singer-io", "meltano", "elt", "sqlite", "singer-tap"]
+readme = "README.md"
+license.file = "LICENSE"
+maintainers = [{ name = "Meltano", email = "hello@meltano.com" }]
+authors = [{ name = "Meltano", email = "hello@meltano.com" }]
+description = "Singer.io target for importing data to SQLite"
+requires-python = ">=3.7"
+classifiers = ["Programming Language :: Python :: 3 :: Only"]
+dependencies = [
+    "inflection>=0.3.1",
+    "singer-python>=5.0.12",
+    "sqlalchemy==1.3.0",
 ]
+optional-dependencies.dev = ["pytest>=3.8", "black>=18.3a0"]
+urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
+urls.Homepage = "https://github.com/MeltanoLabs/target-sqlite"
+urls.Repository = "https://github.com/MeltanoLabs/target-sqlite"
+scripts."target-sqlite" = "target_sqlite:main"
+
+[tool.pytest.ini_options]
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
