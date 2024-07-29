@@ -1,8 +1,10 @@
 import json
 import pytest
 
+from collections import UserDict
 
-class SilencedDict(dict):
+
+class SilencedDict(UserDict):
     def __repr__(self):
         return "Dict[ ... sensitive_data ... ]"
 
@@ -15,7 +17,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def config(request):
+def config(request: pytest.FixtureRequest) -> SilencedDict:
     config = SilencedDict()
 
     config_file = request.config.getoption("--config")
