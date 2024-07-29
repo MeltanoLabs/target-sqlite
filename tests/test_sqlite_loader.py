@@ -1,10 +1,9 @@
-import json
 import logging
 import pytest
 
 from datetime import datetime
 
-from sqlalchemy import MetaData, Table, Column, inspect
+from sqlalchemy import MetaData, Table, Column, func, inspect, select, text
 from sqlalchemy.types import TIMESTAMP, Float, String, BigInteger, Boolean
 
 from target_sqlite.sqlite_loader import SQLiteLoader
@@ -216,7 +215,7 @@ class TestSQLiteLoader:
         with loader.engine.connect() as connection:
             assert connection
 
-            results = connection.execute("select sqlite_version()").fetchone()
+            results = connection.execute(select(func.sqlite_version())).fetchone()
             logging.info(f"Current SQLITE version: {results[0]}")
 
             assert results[0] is not None
@@ -260,12 +259,12 @@ class TestSQLiteLoader:
         loader.load(test_data)
 
         # Check that the correct number of rows were inserted
-        query = f"SELECT COUNT(*) FROM {test_table.name}"
-        query2 = f"""
-                   SELECT COUNT(*)
-                   FROM {test_table.name}
-                   WHERE bool_attr = 1
-                  """
+        query = select(func.count()).select_from(test_table)
+        query2 = (
+            select(func.count())
+            .select_from(test_table)
+            .where(test_table.c.bool_attr == 1)
+        )
         with loader.engine.connect() as connection:
             results = connection.execute(query).fetchone()
             assert results[0] == 8
@@ -276,11 +275,11 @@ class TestSQLiteLoader:
         # Test Upserting Data (8 updates && 2 inserts)
         loader.load(test_data_upsert)
 
-        query3 = f"""
-                   SELECT COUNT(*)
-                   FROM {test_table.name}
-                   WHERE str_attr = 'New_Value'
-                  """
+        query3 = (
+            select(func.count())
+            .select_from(test_table)
+            .where(test_table.c.str_attr == "New_Value")
+        )
 
         with loader.engine.connect() as connection:
             results = connection.execute(query).fetchone()
@@ -302,5 +301,5 @@ class TestSQLiteLoader:
         loader.schema_apply()
 
         with loader.engine.connect() as connection:
-            journal_mode = connection.scalar("PRAGMA journal_mode")
+            journal_mode = connection.scalar(text("PRAGMA journal_mode"))
             assert journal_mode == "wal"

@@ -2,10 +2,9 @@ import pytest
 import os
 
 from jsonschema import ValidationError
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, text
 
 from target_sqlite.target_sqlite import TargetSQLite
-from target_sqlite.utils.error import SchemaUpdateError
 
 
 def load_stream(filename):
@@ -19,7 +18,7 @@ def load_stream(filename):
 def sqlite_engine(config):
     db_file = f'{config["database"]}.db'
     try:
-        yield create_engine(f"sqlite:///{db_file}")
+        yield create_engine(f"sqlite:///{db_file}", future=True)
     finally:
         os.remove(db_file)
 
@@ -92,8 +91,8 @@ class TestTargetSQLite:
         )
 
         # We also need to test that the record has data in the camelcased field
-        with sqlite_engine.connect() as connection:
-            item_query = f"SELECT client_name FROM test_camelcase"
+        with sqlite_engine.begin() as connection:
+            item_query = text("SELECT client_name FROM test_camelcase")
             item_result = connection.execute(item_query).fetchone()
             assert item_result[0] == "Gitter Windows Desktop App"
 
@@ -173,26 +172,26 @@ class TestTargetSQLite:
 
         # We also need to test that the proper data records were stored
         with sqlite_engine.connect() as connection:
-            query = (
+            query = text(
                 "SELECT COUNT(*) "
-                f" FROM test_object_schema_with_properties "
+                " FROM test_object_schema_with_properties "
                 " WHERE object_store__id = 1 AND object_store__metric = 187"
             )
             result = connection.execute(query).fetchone()
             assert result[0] == 1
 
-            query = """
+            query = text("""
                 SELECT COUNT(*)
                 FROM test_object_schema_no_properties
                 WHERE object_store = '{"id": 1, "metric": 1}'
-            """
+            """)
             result = connection.execute(query).fetchone()
             assert result[0] == 1
 
         # Drop the Test Tables
-        with sqlite_engine.connect() as connection:
-            connection.execute(f"DROP TABLE test_object_schema_with_properties")
-            connection.execute(f"DROP TABLE test_object_schema_no_properties")
+        with sqlite_engine.begin() as connection:
+            connection.execute(text("DROP TABLE test_object_schema_with_properties"))
+            connection.execute(text("DROP TABLE test_object_schema_no_properties"))
 
     @pytest.mark.slow
     def test_schema_updates(self, config, sqlite_engine):
@@ -389,11 +388,11 @@ class TestTargetSQLite:
 
         # We also need to test that the proper data records were stored
         with sqlite_engine.connect() as connection:
-            query = """
+            query = text("""
                 SELECT json_array_length(fruits) AS size
                 FROM test_carts
                 ORDER BY id
-            """
+            """)
             result = connection.execute(query).fetchall()
             assert result[0][0] == 3
             assert result[1][0] == 2
@@ -401,8 +400,8 @@ class TestTargetSQLite:
             assert result[3][0] == 4
 
         # Drop the Test Table
-        with sqlite_engine.connect() as connection:
-            connection.execute(f"DROP TABLE test_carts")
+        with sqlite_engine.begin() as connection:
+            connection.execute(text("DROP TABLE test_carts"))
 
     @pytest.mark.slow
     def test_encoded_string_data(self, config, sqlite_engine):
@@ -461,7 +460,7 @@ class TestTargetSQLite:
 
             all_table_names = inspector.get_table_names()
 
-            with sqlite_engine.connect() as connection:
+            with sqlite_engine.begin() as connection:
                 for table in expected["tables"]:
                     # Check that the Table has been created in SQLite
                     assert table in all_table_names
@@ -477,7 +476,7 @@ class TestTargetSQLite:
                         assert column in db_columns
 
                     # Check that the correct number of rows were inserted
-                    query = f"SELECT COUNT(*) FROM {table}"
+                    query = text(f"SELECT COUNT(*) FROM {table}")
 
                     results = connection.execute(query).fetchone()
                     assert results[0] == expected["total_records"][table]

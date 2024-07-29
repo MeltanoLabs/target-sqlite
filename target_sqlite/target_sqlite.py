@@ -2,7 +2,7 @@ import json
 import singer
 import sys
 
-from datetime import datetime
+from datetime import datetime, timezone
 from jsonschema import ValidationError, Draft4Validator, FormatChecker
 from typing import Dict, List, Iterator
 
@@ -173,7 +173,7 @@ class TargetSQLite:
 
             # Add an `timestamp_column` timestamp for the record
             if self.timestamp_column not in flat_record:
-                flat_record[self.timestamp_column] = datetime.utcnow()
+                flat_record[self.timestamp_column] = datetime.now(tz=timezone.utc)
 
             # Normalize the record to make sure it follows the full schema defined
             new_record = self.template_records[stream].copy()
@@ -350,7 +350,7 @@ class TargetSQLite:
         """
         if state is not None:
             line = json.dumps(state)
-            LOGGER.debug('Emitting state {}'.format(line))
+            LOGGER.debug("Emitting state {}".format(line))
             sys.stdout.write("{}\n".format(line))
             sys.stdout.flush()
 

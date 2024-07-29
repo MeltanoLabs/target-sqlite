@@ -23,13 +23,9 @@ logger.setLevel(logging.WARNING)
 
 def generate_sqlalchemy_table(stream, key_properties, json_schema, timestamp_column):
     flat_schema = flatten_schema(json_schema)
-    schema_dict = {
-        Column(name, sqlalchemy_column_type(schema), primary_key=True)
-        for (name, schema) in flat_schema.items()
-    }
 
     columns = []
-    for (name, schema) in flat_schema.items():
+    for name, schema in flat_schema.items():
         pk = name in key_properties
         column = Column(name, sqlalchemy_column_type(schema), primary_key=pk)
         columns.append(column)
@@ -121,7 +117,9 @@ def flatten_schema(d, parent_key=[], sep="__"):
                     property["type"] = ["null", "array"]
                     items.append((new_key, property))
 
-    key_func = lambda item: item[0]
+    def key_func(item):
+        return item[0]
+
     sorted_items = sorted(items, key=key_func)
     for k, g in itertools.groupby(sorted_items, key=key_func):
         if len(list(g)) > 1:
