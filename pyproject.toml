@@ -4,21 +4,19 @@ requires = ["hatchling"]
 
 [project]
 name = "target-sqlite"
-version = "0.5.1"
+version = "0.6.0"
 keywords = ["singer-io", "meltano", "elt", "sqlite", "singer-tap"]
 readme = "README.md"
 license.file = "LICENSE"
 maintainers = [{ name = "Meltano", email = "hello@meltano.com" }]
 authors = [{ name = "Meltano", email = "hello@meltano.com" }]
 description = "Singer.io target for importing data to SQLite"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
