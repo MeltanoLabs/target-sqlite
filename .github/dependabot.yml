@@ -11,8 +11,6 @@ updates:
       interval: weekly
       timezone: Etc/UTC
       time: "14:00"
-    reviewers:
-      - "edgarrmondragon"
     versioning-strategy: increase-if-necessary
     groups:
       development-dependencies:
@@ -30,8 +28,6 @@ updates:
       interval: monthly
       timezone: Etc/UTC
       time: "14:00"
-    reviewers:
-      - "edgarrmondragon"
     groups:
       actions:
         patterns:
