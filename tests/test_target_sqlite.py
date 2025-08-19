@@ -16,7 +16,7 @@ def load_stream(filename):
 
 @pytest.fixture(scope="class")
 def sqlite_engine(config):
-    db_file = f'{config["database"]}.db'
+    db_file = f"{config['database']}.db"
     try:
         yield create_engine(f"sqlite:///{db_file}", future=True)
     finally:
