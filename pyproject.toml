@@ -28,7 +28,11 @@ dependencies = [
     "singer-python>=5.0.12",
     "sqlalchemy==2.0.43",
 ]
-optional-dependencies.dev = ["pytest>=3.8", "black>=18.3a0"]
+optional-dependencies.dev = [
+    "pytest>=8",
+    "ruff>=0.12",
+    "ty>=0.0.1a19",
+]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
 urls.Homepage = "https://github.com/MeltanoLabs/target-sqlite"
 urls.Repository = "https://github.com/MeltanoLabs/target-sqlite"

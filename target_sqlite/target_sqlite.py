@@ -1,4 +1,5 @@
 import json
+import json.decoder
 import singer
 import sys
 

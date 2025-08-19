@@ -1,6 +1,7 @@
 import argparse
 import io
 import json
+import pathlib
 import sys
 import singer
 
@@ -36,23 +37,26 @@ def process_input(config, lines):
 
 
 def main_implementation():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", help="Config file", required=True)
-    args = parser.parse_args()
+    class CLINamespace(argparse.Namespace):
+        config: io.TextIOWrapper
 
-    if args.config:
-        with open(args.config) as input:
-            config = json.load(input)
-    else:
-        raise Exception("No config file provided")
+    parser = argparse.ArgumentParser(description="Singer target for SQLite.")
+    parser.add_argument(
+        "-c",
+        "--config",
+        required=True,
+        type=argparse.FileType("r"),
+        help="Config file",
+    )
+    args = parser.parse_args(namespace=CLINamespace)
+    config = json.load(args.config)
 
-    missing_keys = [key for key in REQUIRED_CONFIG_KEYS if key not in config]
-    if missing_keys:
-        raise Exception("Config is missing required keys: {}".format(missing_keys))
+    if missing_keys := set(REQUIRED_CONFIG_KEYS).difference(config):
+        msg = f"Config is missing required keys: {missing_keys}"
+        raise Exception(msg)
 
     # Run the Input processing loop until everything is done
-    input = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-    process_input(config, input)
+    process_input(config, io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8"))
 
     LOGGER.debug("Exiting normally")
 
