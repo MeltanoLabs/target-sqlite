@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "inflection>=0.3.1",
     "singer-python>=5.0.12",
-    "sqlalchemy==2.0.47",
+    "sqlalchemy==2.0.48",
 ]
 optional-dependencies.dev = [
     "pytest>=8",
