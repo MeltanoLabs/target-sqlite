@@ -4,24 +4,23 @@ requires = ["hatchling"]
 
 [project]
 name = "target-sqlite"
-version = "0.6.0"
+version = "0.7.0"
 keywords = ["singer-io", "meltano", "elt", "sqlite", "singer-tap"]
 readme = "README.md"
-license.file = "LICENSE"
+license = "MIT"
 maintainers = [{ name = "Meltano", email = "hello@meltano.com" }]
 authors = [{ name = "Meltano", email = "hello@meltano.com" }]
 description = "Singer.io target for importing data to SQLite"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "inflection>=0.3.1",
@@ -29,14 +28,16 @@ dependencies = [
     "sqlalchemy==2.0.50",
 ]
 optional-dependencies.dev = [
-    "pytest>=8",
+    "pytest>=9",
     "ruff>=0.12",
-    "ty>=0.0.1a19",
+    "ty>=0.0.35",
 ]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
 urls.Homepage = "https://github.com/MeltanoLabs/target-sqlite"
 urls.Repository = "https://github.com/MeltanoLabs/target-sqlite"
 scripts."target-sqlite" = "target_sqlite:main"
 
-[tool.pytest.ini_options]
+[tool.pytest]
 markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
+minversion = "9"
+strict = true
