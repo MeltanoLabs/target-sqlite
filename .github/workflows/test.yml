@@ -1,5 +1,7 @@
 name: Tests
 
+permissions: {}
+
 on:
   pull_request: {}
   push:
@@ -7,11 +9,16 @@ on:
   workflow_dispatch:
     inputs: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_COLOR: 1
 
 jobs:
   tests:
+    name: Test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,9 +29,12 @@ jobs:
         - "3.12"
         - "3.13"
         - "3.14"
+        - "3.15"
     steps:
     - name: Checkout code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -37,7 +47,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install .[dev]
+        pip install . --group dev
 
     - name: Run tests
       run: |

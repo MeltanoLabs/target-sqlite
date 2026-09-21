@@ -21,21 +21,24 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 dependencies = [
     "inflection>=0.3.1",
     "singer-python>=5.0.12",
     "sqlalchemy==2.0.54",
 ]
-optional-dependencies.dev = [
-    "pytest>=9",
-    "ruff>=0.12",
-    "ty>=0.0.35",
-]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
 urls.Homepage = "https://github.com/MeltanoLabs/target-sqlite"
 urls.Repository = "https://github.com/MeltanoLabs/target-sqlite"
 scripts."target-sqlite" = "target_sqlite:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9",
+    "ruff>=0.12",
+    "ty>=0.0.35",
+]
 
 [tool.pytest]
 markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]

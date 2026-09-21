@@ -8,7 +8,7 @@ and loads them to SQLite.
 ## Installation
 
 1. Create and activate a virtualenv
-2. `pip install -e '.[dev]'`  
+2. `pip install -e . --group dev`
 
 ## Configuration of target-sqlite
 
