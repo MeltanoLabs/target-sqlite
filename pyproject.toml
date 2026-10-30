@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "inflection>=0.3.1",
     "singer-python>=5.0.12",
-    "sqlalchemy==2.0.54",
+    "sqlalchemy==2.0.55",
 ]
 urls.Documentation = "https://hub.meltano.com/loaders/target-sqlite--meltanolabs"
 urls.Homepage = "https://github.com/MeltanoLabs/target-sqlite"
